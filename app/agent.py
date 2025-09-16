@@ -21,6 +21,7 @@ from google.adk.agents import Agent, SequentialAgent
 from google.adk.tools.agent_tool import AgentTool
 
 from .sub_agents.room_analyzer import room_analyzer_agent
+from .sub_agents.interview_agent import interview_agent
 
 _, project_id = google.auth.default()
 os.environ.setdefault("GOOGLE_CLOUD_PROJECT", project_id)
@@ -29,9 +30,10 @@ os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "True")
 
 extreme_makeover_team = SequentialAgent(
     name="extreme_makeover_team",
-    description="Generate perfect room idea.",
+    description="""Generate perfect room idea. 
+    Interview user to ask for user goals and preferances """,
     sub_agents=[
-        room_analyzer_agent,
+        room_analyzer_agent, interview_agent
     ],
 )
 
@@ -43,6 +45,7 @@ root_agent = Agent(
     - Let the user know you will help them with room remake ideas. Ask them for   
       a room image.
     - When they send the image transfer to the extreme_makeover_team.
+    
     """,
     sub_agents=[extreme_makeover_team],
     # tools=[
