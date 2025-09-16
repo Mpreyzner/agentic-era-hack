@@ -13,35 +13,9 @@
 # limitations under the License.
 
 from google.adk.agents import Agent
-from google.adk.tools import Tool
-from vertexai.generative_models import GenerativeModel, Part
-
-def analyze_room_picture(picture: Part) -> str:
-    """
-    Analyzes a picture of a room and returns a description of its key features.
-
-    Args:
-        picture: A picture of the room to analyze.
-
-    Returns:
-        A string describing the key features of the room.
-    """
-    model = GenerativeModel("gemini-1.5-pro-preview-0409")
-    response = model.generate_content(
-        ["Describe the key features of this room.", picture]
-    )
-    return response.text
-
 
 room_analyzer_agent = Agent(
     name="room_analyzer_agent",
-    model="gemini-2.5-pro",
+    model="gemini-2.0-flash",
     instruction="You are an agent that analyzes room pictures and identifies key features.",
-    tools=[
-        Tool(
-            name="analyze_room_picture",
-            description="Analyzes a picture of a room and returns a description of its key features.",
-            func=analyze_room_picture,
-        )
-    ],
 )
