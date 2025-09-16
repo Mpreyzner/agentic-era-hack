@@ -17,16 +17,36 @@ import os
 from zoneinfo import ZoneInfo
 
 import google.auth
-from google.adk.agents import Agent
+from google.adk.agents import Agent, SequentialAgent
+from google.adk.tools.agent_tool import AgentTool
+
+from .sub_agents.room_analyzer import room_analyzer_agent
 
 _, project_id = google.auth.default()
 os.environ.setdefault("GOOGLE_CLOUD_PROJECT", project_id)
 os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "global")
 os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "True")
 
+extreme_makeover_team = SequentialAgent(
+    name="extreme_makeover_team",
+    description="Generate perfect room idea.",
+    sub_agents=[
+        room_analyzer_agent,
+    ],
+)
 
 root_agent = Agent(
     name="root_agent",
     model="gemini-2.5-flash",
-    instruction="You are a helpful AI assistant designed to provide accurate and useful information.",
+    description="Guides the user in room remake suggestions.",
+    instruction="""
+    - Let the user know you will help them with room remake ideas. Ask them for   
+      a room image.
+    - When they send the image transfer to the extreme_makeover_team.
+    """,
+    sub_agents=[extreme_makeover_team],
+    # tools=[
+    #     AgentTool(agent=room_analyzer_agent),
+    # ],
+
 )
