@@ -22,6 +22,7 @@ from google.adk.tools.agent_tool import AgentTool
 
 from .sub_agents.room_analyzer import room_analyzer_agent
 from .sub_agents.interview_agent import interview_agent
+from .sub_agents.search_agent import search_agent
 
 _, project_id = google.auth.default()
 os.environ.setdefault("GOOGLE_CLOUD_PROJECT", project_id)
@@ -33,7 +34,7 @@ extreme_makeover_team = SequentialAgent(
     description="""Generate perfect room idea. 
     Interview user to ask for user goals and preferances """,
     sub_agents=[
-        room_analyzer_agent, interview_agent
+        room_analyzer_agent, interview_agent, search_agent
     ],
 )
 
