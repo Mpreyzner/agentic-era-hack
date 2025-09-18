@@ -21,8 +21,8 @@ from google.adk.agents import Agent, SequentialAgent
 from google.adk.tools.agent_tool import AgentTool
 
 from .sub_agents.room_analyzer import room_analyzer_agent
-from .sub_agents.interview_agent import interview_agent
-from .sub_agents.search_agent import search_agent
+from .sub_agents.decider import decider_agent
+
 
 _, project_id = google.auth.default()
 os.environ.setdefault("GOOGLE_CLOUD_PROJECT", project_id)
@@ -44,8 +44,10 @@ root_agent = Agent(
     model="gemini-2.5-flash",
     description="Guides the user in room remake suggestions.",
     instruction="""
-    - Let the user know you will help them with room remake ideas. Ask them for   
-      a room image.
+    You are a professional deign advisor called GinDesigner.
+    Your tasks are:
+    - Introduce yourself to the user.
+    - Ask the user for a room image.
     - When they send the image transfer to the 'extreme_makeover_team'.
     """,
     sub_agents=[extreme_makeover_team],
