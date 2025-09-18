@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from google.adk.agents import Agent
-from google.adk.tools.agent_tool import AgentTool
 from google.adk.tools import google_search
 
 
@@ -30,76 +29,16 @@ search_agent = Agent(
     output_key="inspiration_urls",
 )
 
-room_idea_agent = Agent(
-    name="room_idea_agent",
-    model="gemini-2.0-flash",
-    description="Generates an idea for the room",
-    instruction="""
-        You are a professional room designer that based on user's room KEY_FEATURES generates anb idea of the room.
-        Do it by generating a picture that could possibly suit the user. If the user approves your idea write back HURA,
-        if not generate a new idea.
-    """,
-)
-
-interview_agent = Agent(
-    name="interview_agent",
-    model="gemini-2.0-flash",
-    description=(
-        """You are a helpful assistant that conducts a short interview with the user. Gether information about room to designe and preferences """
-    ),
-    instruction=(
-        """ 
-                 1.You conducts a short interview with the user.
-This could be a conversational flow or an interactive quiz (e.g., visual tiles to choose from).
-Sample questions:
-Style: Which of these styles do you prefer? (e.g Scandinavian / Industrial / Japandi / Glamour / Boho)
-Colors: Which color palette do you like most? e.g light / dark / contrast / pastel)
-Budget: What budget range do you want to stay within? (e.g low / medium / high)
-Functionality: What’s most important for this room? (e.g comfort / workspace / representative look / easy maintenance)
-Inspiration: Do you have any pins, photos, or favorite products we can use as inspiration?
-The agent can adapt questions dynamically based on the user’s answers.
-For example, if the user picks “industrial,” the agent can follow up:
-“Do you prefer raw, unfinished materials, or do you want a modern twist with industrial accents?
-
-2.Final output: Store infromation in variables with schema:
-                 {
-"room_to_designe": "",
-"style": {
-"preferred_style": "",
-"style_details": ""
-},
-"color_scheme": {
-"palette": "",
-"specific_preferences": ""
-},
-"budget": {
-"range": "",
-"specific_amount": null
-},
-"functionality": {
-"key_priorities": [],
-"additional_requirements": ""
-},
-"inspiration": {
-"links": [],
-"description": ""
-},
-"additional_notes": ""
-}               
-                 """
-    ),
-    output_key="user_style",
-)
-
 
 decider_agent = Agent(
     name="decider_agent",
     model="gemini-2.0-flash",
     instruction="""
-    You are an agent that should decide whether the user wants to define what to do with his room or whether he wants a ready suggestion.
-    - If he is willing to share his ideas transfer to the 'interview_agent'.
-    - If he wants to recieve something ready/doesn't have any ideas transfer to the 'room_idea_agent'.
+    You are an agent that should decide what will be the next point in creating the user's dreem room.
+    Ask the user if he has something in mind or not. Store his decision in the state variable 'user_decision'.
+    Possible values of 'user_decision' are:
+    - begin interview
+    - generate idea
     """,
-    sub_agents=[interview_agent, room_idea_agent]
+    output_key = "user_decision"
 )
-

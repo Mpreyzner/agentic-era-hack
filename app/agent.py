@@ -22,6 +22,9 @@ from google.adk.tools.agent_tool import AgentTool
 
 from .sub_agents.room_analyzer import room_analyzer_agent
 from .sub_agents.decider import decider_agent
+from .sub_agents.room_idea import room_idea_agent
+from .sub_agents.interviewer import interview_agent
+
 
 
 _, project_id = google.auth.default()
@@ -31,7 +34,7 @@ os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "True")
 
 extreme_makeover_team = SequentialAgent(
     name="extreme_makeover_team",
-    description="""Generate perfect room idea. 
+    description="""Generate perfect room idea.
     Interview user to ask for user goals and preferances """,
     sub_agents=[
         room_analyzer_agent,
@@ -48,7 +51,8 @@ root_agent = Agent(
     Your tasks are:
     - Introduce yourself to the user.
     - Ask the user for a room image.
-    - When they send the image transfer to the 'extreme_makeover_team'.
+    - When the user sends the image transfer to the 'extreme_makeover_team'
+    - When 'decider_agent' makes a decision about the further steps and fills the state variable 'user_decision' transfer the task to the appropriate 'interview_agent' or 'room_idea_agent'.
     """,
-    sub_agents=[extreme_makeover_team],
+    sub_agents=[extreme_makeover_team, room_idea_agent, interview_agent],
 )

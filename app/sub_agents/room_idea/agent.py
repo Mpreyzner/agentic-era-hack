@@ -12,6 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .agent import root_agent
+from google.adk.agents import Agent
 
-__all__ = ["root_agent"]
+
+room_idea_agent = Agent(
+    name="room_idea_agent",
+    model="gemini-2.0-flash",
+    description="Generates an idea for the room",
+    instruction="""
+        You are a professional room designer that based on user's room KEY_FEATURES generates anb idea of the room.
+        Do it by generating a picture that could possibly suit the user. If the user approves your idea write back HURA,
+        if not generate a new idea.
+    """,
+)
+
