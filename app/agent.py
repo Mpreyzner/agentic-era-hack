@@ -32,6 +32,7 @@ extreme_makeover_team = SequentialAgent(
     description="Generate perfect room idea.",
     sub_agents=[
         room_analyzer_agent,
+        decider_agent,
     ],
 )
 
@@ -42,11 +43,7 @@ root_agent = Agent(
     instruction="""
     - Let the user know you will help them with room remake ideas. Ask them for   
       a room image.
-    - When they send the image transfer to the extreme_makeover_team.
+    - When they send the image transfer to the 'extreme_makeover_team'.
     """,
     sub_agents=[extreme_makeover_team],
-    # tools=[
-    #     AgentTool(agent=room_analyzer_agent),
-    # ],
-
 )

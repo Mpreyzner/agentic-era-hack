@@ -13,9 +13,34 @@
 # limitations under the License.
 
 from google.adk.agents import Agent
+from google.adk.tools.tool_context import ToolContext
+
+# def append_to_state(
+#     tool_context: ToolContext, field: str, response: str
+# ) -> dict[str, str]:
+#     """Append new output to an existing state key.
+
+#     Args:
+#         field (str): a field name to append to
+#         response (str): a string to append to the field
+
+#     Returns:
+#         dict[str, str]: {"status": "success"}
+#     """
+#     existing_state = tool_context.state.get(field, [])
+#     tool_context.state[field] = existing_state + [response]
+#     logging.info(f"[Added to {field}] {response}")
+#     return {"status": "success"}
+
 
 room_analyzer_agent = Agent(
     name="room_analyzer_agent",
     model="gemini-2.0-flash",
-    instruction="You are an agent that analyzes room pictures and identifies key features.",
+    instruction="""
+    You are an agent that analyzes room pictures and identifies key features
+    Set the following values to state:
+    - KEY_FEATURES.
+    - ROOM_TYPE
+    """,
+    output_key = "ROOM_FEATURES",
 )
