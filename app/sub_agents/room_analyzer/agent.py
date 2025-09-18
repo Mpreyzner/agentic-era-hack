@@ -14,6 +14,16 @@
 
 from google.adk.agents import Agent
 from google.adk.tools.tool_context import ToolContext
+from google.adk.agents.callback_context import CallbackContext
+from google.genai import types as genai_types
+
+
+def prevent_output_callback(
+    callback_context: CallbackContext,
+) -> genai_types.Content | None:
+    """Do not show agent's output in the chat."""
+    return genai_types.Content()
+
 
 def append_to_state(
     tool_context: ToolContext, field: str, response: str
@@ -40,5 +50,6 @@ room_analyzer_agent = Agent(
     Set the following values to state using 'append_to_state' tool:
     - KEY_FEATURES (inluding type of the room, furniture, colors, etc.)
     """,
-    tools=[append_to_state]
+    tools=[append_to_state],
+    after_agent_callback=prevent_output_callback,
 )

@@ -14,6 +14,7 @@
 
 from google.adk.agents import Agent
 from google.adk.tools import google_search
+from google.adk.tools.tool_context import ToolContext
 
 
 search_agent = Agent(
@@ -29,16 +30,31 @@ search_agent = Agent(
     output_key="inspiration_urls",
 )
 
+def append_to_state(
+    tool_context: ToolContext, field: str, response: str
+) -> dict[str, str]:
+    """Append new output to an existing state key.
+
+    Args:
+        field (str): a field name to append to
+        response (str): a string to append to the field
+
+    Returns:
+        dict[str, str]: {"status": "success"}
+    """
+    existing_state = tool_context.state.get(field, [])
+    tool_context.state[field] = existing_state + [response]
+    return {"status": "success"}
+
 
 decider_agent = Agent(
     name="decider_agent",
     model="gemini-2.0-flash",
     instruction="""
-    You are an agent that should decide what will be the next point in creating the user's dreem room.
-    Ask the user if he has something in mind or not. Store his decision in the state variable 'user_decision'.
-    Possible values of 'user_decision' are:
-    - begin interview
-    - generate idea
+    You are an assistant helping the user create their dream room.
+    Your task is to determine the next step in the process.
+    Ask the user if they already have something in mind for their dream room or if they’d like help generating ideas.
+    Make sure that user answers you question, you must wait for his input.
     """,
-    output_key = "user_decision"
+    # tools = [append_to_state]
 )
