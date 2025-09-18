@@ -14,6 +14,14 @@
 
 from google.adk.agents import Agent
 from google.adk.tools.tool_context import ToolContext
+from google.adk.tools.agent_tool import AgentTool
+from google.adk.tools import google_search
+from google.genai import types # For creating message Content/Parts
+from google.adk.tools import load_artifacts
+from google.genai import Client
+from google.adk.tools.tool_context import ToolContext
+from vertexai.preview.vision_models import ImageGenerationModel
+import base64
 
 
 def append_to_state(
@@ -31,6 +39,39 @@ def append_to_state(
     existing_state = tool_context.state.get(field, [])
     tool_context.state[field] = existing_state + [response]
     return {"status": "success"}
+
+
+client = Client()
+async def generate_image(prompt: str, tool_context: 'ToolContext'):
+  """Generates or edits an image based on the prompt."""
+  response = client.models.generate_images (
+      model='imagen-4.0-generate-001',
+      prompt=prompt,
+      config={'number_of_images': 1},
+
+  )
+  if not response.generated_images:
+    return {'status': 'failed'}
+  image_bytes = response.generated_images[0].image.image_bytes
+  await tool_context.save_artifact(
+      'image.png',
+      types.Part.from_bytes(data=image_bytes, mime_type='image/png'),
+  )
+  return {
+      'status': 'success',
+      'detail': 'Image generated successfully and stored in artifacts.',
+      'filename': 'image.png',
+  }
+
+
+image_agent = Agent(
+    model='gemini-2.5-pro',
+    name='image_agent',
+    description="""An agent that generates, edits, and modifies images and answer questions about the images.""",
+    instruction=""" You are an agent whose job is to generate an image based on 'INTERVIEW_RESULTS'
+    """,
+    tools=[generate_image],
+)
 
 
 interview_agent = Agent(
@@ -78,8 +119,10 @@ interview_agent = Agent(
     "description": ""
     },
     "additional_notes": ""
-    }               
-                    """
+    }
+    3. After finished interview transfer to the 'image_agent'.            
+    """
     ),
-    tools = [append_to_state]
+    tools = [append_to_state],
+    sub_agents=[image_agent],
 )
