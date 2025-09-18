@@ -30,23 +30,6 @@ search_agent = Agent(
     output_key="inspiration_urls",
 )
 
-def append_to_state(
-    tool_context: ToolContext, field: str, response: str
-) -> dict[str, str]:
-    """Append new output to an existing state key.
-
-    Args:
-        field (str): a field name to append to
-        response (str): a string to append to the field
-
-    Returns:
-        dict[str, str]: {"status": "success"}
-    """
-    existing_state = tool_context.state.get(field, [])
-    tool_context.state[field] = existing_state + [response]
-    return {"status": "success"}
-
-
 decider_agent = Agent(
     name="decider_agent",
     model="gemini-2.0-flash",
@@ -56,5 +39,4 @@ decider_agent = Agent(
     Ask the user if they already have something in mind for their dream room or if they’d like help generating ideas.
     Make sure that user answers you question, you must wait for his input.
     """,
-    # tools = [append_to_state]
 )

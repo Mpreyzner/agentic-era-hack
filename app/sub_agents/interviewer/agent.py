@@ -13,6 +13,24 @@
 # limitations under the License.
 
 from google.adk.agents import Agent
+from google.adk.tools.tool_context import ToolContext
+
+
+def append_to_state(
+    tool_context: ToolContext, field: str, response: str
+) -> dict[str, str]:
+    """Append new output to an existing state key.
+
+    Args:
+        field (str): a field name to append to
+        response (str): a string to append to the field
+
+    Returns:
+        dict[str, str]: {"status": "success"}
+    """
+    existing_state = tool_context.state.get(field, [])
+    tool_context.state[field] = existing_state + [response]
+    return {"status": "success"}
 
 
 interview_agent = Agent(
@@ -35,7 +53,8 @@ interview_agent = Agent(
     For example, if the user picks “industrial,” the agent can follow up:
     “Do you prefer raw, unfinished materials, or do you want a modern twist with industrial accents?
 
-    2.Final output: Store infromation in variables with schema:
+    2.Final output: Store infromation in 'INTERVIEW_RESULTS' within state using 'append_to_state' tool.
+    The structure of 'INTERVIEW_RESULTS' should be as following schema:
                     {
     "room_to_designe": "",
     "style": {
@@ -62,5 +81,5 @@ interview_agent = Agent(
     }               
                     """
     ),
-    output_key="user_style",
+    tools = [append_to_state]
 )
