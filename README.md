@@ -1,7 +1,27 @@
 # acn-gin-designer
+A multi-agent room–makeover assistant built with **Google's Agent Development Kit (ADK)**. The project follows a “bring your own agent” pattern: you focus on agent logic; the template handles UI, infra, CI/CD, and observability.
 
-A base ReAct agent built with Google's Agent Development Kit (ADK)
-Agent generated with [`googleCloudPlatform/agent-starter-pack`](https://github.com/GoogleCloudPlatform/agent-starter-pack) version `0.14.1`
+> Generated originally from `googleCloudPlatform/agent-starter-pack`
+
+## ✨ What it does
+
+- Guides a user through a **room redesign** workflow.
+- Accepts **image uploads** of a room, persists them as **artifacts**, and uses them for downstream analysis and **image edits**.
+- Orchestrates a small **multi-agent team** (analysis → interview/decision → idea synthesis).
+
+---
+
+## 🧱 Stack
+
+- **Google ADK** (agents, tools, callbacks, artifacts)
+- **Gemini models**
+  - `gemini-2.5-flash` for chat/coordination
+  - `gemini-2.5-flash-image-preview` for **image generation/edits** (returns text+image)
+- **Vertex AI** routing (`GOOGLE_GENAI_USE_VERTEXAI=True`)
+- **Infrastructure**: Terraform + Cloud Build/GitHub Actions templates
+- **Observability**: OpenTelemetry → Cloud Logging/Trace + optional Looker Studio dashboard
+
+---
 
 ## Project Structure
 
