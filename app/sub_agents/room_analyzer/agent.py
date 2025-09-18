@@ -24,7 +24,6 @@ def prevent_output_callback(
     """Do not show agent's output in the chat."""
     return genai_types.Content()
 
-
 def append_to_state(
     tool_context: ToolContext, field: str, response: str
 ) -> dict[str, str]:
@@ -40,7 +39,6 @@ def append_to_state(
     existing_state = tool_context.state.get(field, [])
     tool_context.state[field] = existing_state + [response]
     return {"status": "success"}
-
 
 room_analyzer_agent = Agent(
     name="room_analyzer_agent",

@@ -13,16 +13,63 @@
 # limitations under the License.
 
 from google.adk.agents import Agent
+from google.adk.tools.tool_context import ToolContext
+from google.adk.tools.agent_tool import AgentTool
+from google.adk.tools import google_search
+from google.genai import types # For creating message Content/Parts
+from google.adk.tools import load_artifacts
+from google.genai import Client
+from google.adk.tools.tool_context import ToolContext
+from vertexai.preview.vision_models import ImageGenerationModel
+import base64
+
+
+def append_to_state(
+    tool_context: ToolContext, field: str, response: str
+) -> dict[str, str]:
+    """Append new output to an existing state key.
+
+    Args:
+        field (str): a field name to append to
+        response (str): a string to append to the field
+
+    Returns:
+        dict[str, str]: {"status": "success"}
+    """
+    existing_state = tool_context.state.get(field, [])
+    tool_context.state[field] = existing_state + [response]
+    return {"status": "success"}
+
+
+client = Client()
+async def generate_image(prompt: str, tool_context: 'ToolContext'):
+  """Generates or edits an image based on the prompt."""
+  response = client.models.generate_images (
+      model='imagen-4.0-generate-001',
+      prompt=prompt,
+      config={'number_of_images': 1},
+
+  )
+  if not response.generated_images:
+    return {'status': 'failed'}
+  image_bytes = response.generated_images[0].image.image_bytes
+  await tool_context.save_artifact(
+      'image.png',
+      types.Part.from_bytes(data=image_bytes, mime_type='image/png'),
+  )
+  return {
+      'status': 'success',
+      'detail': 'Image generated successfully and stored in artifacts.',
+      'filename': 'image.png',
+  }
 
 
 room_idea_agent = Agent(
-    name="room_idea_agent",
-    model="gemini-2.0-flash",
-    description="Generates an idea for the room",
-    instruction="""
-        You are a professional room designer that based on user's room KEY_FEATURES generates anb idea of the room.
-        Do it by generating a picture that could possibly suit the user. If the user approves your idea write back HURA,
-        if not generate a new idea.
+    model='gemini-2.5-pro',
+    name='room_idea_agent',
+    description="""An agent that generates, edits, and modifies images and answer questions about the images.""",
+    instruction=""" You are an agent whose job is to generate an image of a room that user sent, give him an idea.
     """,
+    tools=[generate_image],
 )
 
