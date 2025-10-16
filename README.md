@@ -50,8 +50,16 @@ Before you begin, ensure you have:
 - **Terraform**: For infrastructure deployment - [Install](https://developer.hashicorp.com/terraform/downloads)
 - **make**: Build automation tool - [Install](https://www.gnu.org/software/make/) (pre-installed on most Unix-based systems)
 
+## Local Testing
 
-## Quick Start (Local Testing)
+For local testing on your machine having only a Gemini API KEY follow these steps:
+- **Step 1:** In agent.py in main app folder comment four lines that are marked to be commented out.  
+- **Step 2:** Add your **Gemini API key** to the `.env` file.
+- **Step 3:** Having installed a package manager with **google-adk** package run the **adk web** command to run local DEV UI.
+- ✅ That's it!
+
+
+## Quick Start
 
 Install required packages and launch the local development environment:
 
