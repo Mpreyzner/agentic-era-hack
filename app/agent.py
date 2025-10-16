@@ -26,7 +26,7 @@ from .sub_agents.room_idea import room_idea_agent
 from .sub_agents.interviewer import interview_agent
 
 
-
+# comment next 4 lines to run the project locally
 _, project_id = google.auth.default()
 os.environ.setdefault("GOOGLE_CLOUD_PROJECT", project_id)
 os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "global")
